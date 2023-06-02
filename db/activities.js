@@ -46,7 +46,33 @@ async function getActivityById(id) {
 
 }
 
-async function getActivityByName(name) {}
+async function getActivityByName(name) {
+
+  try {
+
+    const {rows} = await client.query(`
+    SELECT * 
+    FROM activities
+    WHERE name=$1;
+    `, [name])
+
+    if (!activity){
+      throw{
+        name: 'ActivityNotFoundError',
+        message: 'Could not find an activity with that id'
+      }
+    }
+
+    return rows;
+  } catch (error){
+    throw error;
+  }
+
+
+}
+
+
+
 
 // used as a helper inside db/routines.js
 async function attachActivitiesToRoutines(routines) {}
