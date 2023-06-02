@@ -7,7 +7,7 @@ async function createUser({ username, password }) {
 
   const SALT_COUNT = 10;
   const hashedPassword = await bcrypt.hash(password, SALT_COUNT)
-  try{
+  
     const {rows} = await client.query(`
     INSERT INTO users(username, password)
     VALUES ($1, $2)
@@ -16,9 +16,7 @@ async function createUser({ username, password }) {
     `, [username, hashedPassword])
 
     return rows;
-  } catch (error) {
-    throw error;
-  }
+  
   
 }
 
@@ -33,7 +31,7 @@ async function getUser({ username, password }) {
 }
 
 async function getUserById(userId) {
-  try {
+  
     const {rows } = await client.query(`
     SELECT * FROM users
     WHERE id=$1;
@@ -45,13 +43,18 @@ async function getUserById(userId) {
       delete rows[0].password;
       return rows[0];
     }
-  } catch (error){
-    throw error;
-  }
+  
 }
 
 async function getUserByUsername(userName) {
+const {rows: [user]} = await client.query(`
+  SELECT *
+  FROM users
+  WHERE username = $1;
+  
+  `, [userName]);
 
+  return user;
 }
 
 module.exports = {
