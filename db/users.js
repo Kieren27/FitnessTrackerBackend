@@ -14,6 +14,8 @@ async function createUser({ username, password }) {
     ON CONFLICT (username) DO NOTHING
     RETURNING *;
     `, [username, hashedPassword])
+
+    return rows;
   } catch (error) {
     throw error;
   }
