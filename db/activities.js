@@ -23,7 +23,28 @@ async function getAllActivities() {
   return rows;
 }
 
-async function getActivityById(id) {}
+async function getActivityById(id) {
+  try{
+  const {rows: [activity]} = await client.query(`
+  SELECT * 
+  FROM activities
+  WHERE id=$1;
+  
+  `, [id])
+
+  if (!activity){
+    throw{
+      name: 'ActivityNotFoundError',
+      message: 'Could not find an activity with that id'
+    }
+  }
+
+  return activity;
+} catch (error){
+  throw error;
+}
+
+}
 
 async function getActivityByName(name) {}
 
