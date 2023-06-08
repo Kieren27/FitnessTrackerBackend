@@ -50,7 +50,7 @@ async function getActivityByName(name) {
 
   try {
 
-    const {rows} = await client.query(`
+    const { rows: [activity] } = await client.query(`
     SELECT * 
     FROM activities
     WHERE name=$1;
@@ -59,16 +59,14 @@ async function getActivityByName(name) {
     if (!activity){
       throw{
         name: 'ActivityNotFoundError',
-        message: 'Could not find an activity with that id'
+        message: 'Could not find an activity with that name'
       }
     }
 
-    return rows;
+    return activity;
   } catch (error){
     throw error;
   }
-
-
 }
 
 

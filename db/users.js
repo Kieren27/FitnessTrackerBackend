@@ -9,14 +9,16 @@ async function createUser({ username, password }) {
   const hashedPassword = await bcrypt.hash(password, SALT_COUNT)
 
   try {
-    const { rows } = await client.query(`
+    const { rows: [user] } = await client.query(`
     INSERT INTO users(username, password)
     VALUES ($1, $2)
     ON CONFLICT (username) DO NOTHING
     RETURNING *;
     `, [username, hashedPassword])
 
-    return rows;
+    delete user.password;
+
+    return user;
   } catch (error) {
     throw (error);
   }
@@ -29,6 +31,7 @@ async function getUser({ username, password }) {
     const isValid = await bcrypt.compare(password, hashedPassword);
 
     if (isValid) {
+      delete user.password;
       return user;
     }
   } catch (error) {
@@ -39,17 +42,14 @@ async function getUser({ username, password }) {
 async function getUserById(userId) {
 
   try {
-    const { rows } = await client.query(`
+    const { rows: [user] } = await client.query(`
   SELECT * FROM users
   WHERE id=$1;
   `, [userId])
 
-    if (!rows.length) {
-      return null
-    } else {
-      delete rows[0].password;
-      return rows[0];
-    }
+  delete user.password;
+
+  return user;
   } catch (error) {
     throw (error);
   }
