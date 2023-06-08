@@ -41,7 +41,7 @@ async function getActivityById(id) {
 
   return activity;
 } catch (error){
-  throw error;
+  console.error (error);
 }
 
 }
@@ -65,7 +65,7 @@ async function getActivityByName(name) {
 
     return activity;
   } catch (error){
-    throw error;
+    console.error (error);
   }
 }
 
@@ -108,7 +108,7 @@ async function updateActivity({ id, ...fields }) {
 
     return activity;
   } catch (error) {
-    throw error;
+    console.error (error);
   }
 }
 
