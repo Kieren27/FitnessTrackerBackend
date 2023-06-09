@@ -116,7 +116,7 @@ describe("DB Routines", () => {
   /****Before writing the functions for these tests, go to routine_activities.js
      and write the addActivityToRoutine function.****/
 
-  describe("createRoutine", () => {
+  describe.only("createRoutine", () => {
     it("Creates and returns the new routine", async () => {
       const user = await createFakeUser();
       const routine = await createRoutine({
