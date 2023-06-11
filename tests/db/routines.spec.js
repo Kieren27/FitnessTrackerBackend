@@ -187,7 +187,7 @@ describe("DB Routines", () => {
     });
   });
 
-  describe.only("getAllPublicRoutines", () => {
+  describe("getAllPublicRoutines", () => {
     it("should include the public routine", async () => {
       const routines = await getAllPublicRoutines();
       expectRoutinesToContainRoutine(routines, fakeRoutine);
@@ -293,7 +293,7 @@ describe("DB Routines", () => {
     });
   });
 
-  describe("getPublicRoutinesByUser", () => {
+  describe.only("getPublicRoutinesByUser", () => {
     it("should include the public routine", async () => {
       const routines = await getPublicRoutinesByUser(fakeUser);
       expectRoutinesToContainRoutine(routines, fakeRoutine);
