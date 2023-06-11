@@ -116,7 +116,7 @@ describe("DB Routines", () => {
   /****Before writing the functions for these tests, go to routine_activities.js
      and write the addActivityToRoutine function.****/
 
-  describe.only("createRoutine", () => {
+  describe("createRoutine", () => {
     it("Creates and returns the new routine", async () => {
       const user = await createFakeUser();
       const routine = await createRoutine({
@@ -187,7 +187,7 @@ describe("DB Routines", () => {
     });
   });
 
-  describe("getAllPublicRoutines", () => {
+  describe.only("getAllPublicRoutines", () => {
     it("should include the public routine", async () => {
       const routines = await getAllPublicRoutines();
       expectRoutinesToContainRoutine(routines, fakeRoutine);
