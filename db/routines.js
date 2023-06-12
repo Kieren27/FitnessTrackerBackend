@@ -26,8 +26,17 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
 //shruthi
 async function getRoutineById(id) {
 
+<<<<<<< HEAD
 try{
   const {rows: [routine]} = await client.query(`
+=======
+    return routine;
+  } catch (error) {
+    console.error("Can't get Routine by ID, err");
+    throw error;
+  }
+}
+>>>>>>> ff57506 (Finished Routine_Activities)
 
   SELECT *
   FROM routines
@@ -58,9 +67,13 @@ async function getRoutinesWithoutActivities() {
   } catch (error) {
     throw error;
   }
+<<<<<<< HEAD
 
 }
 
+=======
+}
+>>>>>>> ff57506 (Finished Routine_Activities)
 
 async function getAllRoutines() {
   try {

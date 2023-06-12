@@ -31,13 +31,88 @@ async function getRoutineActivityById(id) {
 
 
 
-async function getRoutineActivitiesByRoutine({ id }) {}
+async function getRoutineActivitiesByRoutine({ id }) {
+  try {
+    const { rows: activities } = await client.query(`
+      SELECT *
+      FROM routine_activities ra
+      WHERE "routineId" = ${id};
+    `);
 
-async function updateRoutineActivity({ id, ...fields }) {}
+    return activities;
+  } catch (error) {
+    console.log("Error getting routine activities by routine: ", error);
+    throw error;
+  }
+}
 
-async function destroyRoutineActivity(id) {}
+async function updateRoutineActivity({ id, ...fields }) {
+  const setString = Object.keys(fields).map(
+    (key, index) => `"${key}"=$${index + 1}`
+  ).join(', ');
 
-async function canEditRoutineActivity(routineActivityId, userId) {}
+  if (setString.length === 0) {
+    return;
+  }
+  
+  try {
+    const { rows: [routineActivity] } = await client.query(`
+      UPDATE routine_activities ra
+      SET ${setString}
+      WHERE id = $${Object.keys(fields).length + 1}
+      RETURNING *;
+    `, [...Object.values(fields), id]);
+
+    return routineActivity;
+
+  
+  } catch (error) {
+    console.error("Error updating routine activity:", error);
+    throw error;
+  }
+}
+
+async function destroyRoutineActivity(id) {
+  try {
+    
+    const {rows: [routine_activities] } = await client.query(
+        `
+        DELETE FROM routine_activities
+        WHERE id = $1
+        RETURNING *;
+        `,[id]
+      )   
+
+
+    return routine_activities;
+
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+async function canEditRoutineActivity(routineActivityId, userId) {
+  
+  try {
+    const { rows: [ routineActivity ] } = await client.query(`
+      SELECT * 
+      FROM routine_activities ra
+      JOIN routines r
+      ON r.id = ra."routineId"
+      WHERE ra.id =$1;
+    `, [ routineActivityId ]);
+  //join routine and reference "creatorId"
+  
+    if (routineActivity.creatorId === userId) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }}
 
 module.exports = {
   getRoutineActivityById,
