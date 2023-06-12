@@ -102,7 +102,7 @@ async function canEditRoutineActivity(routineActivityId, userId) {
       ON r.id = ra."routineId"
       WHERE ra.id =$1;
     `, [ routineActivityId ]);
-  //join routine and reference "creatorId"
+  
   
     if (routineActivity.creatorId === userId) {
       return true;
