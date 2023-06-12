@@ -74,7 +74,30 @@ async function getActivityByName(name) {
 
 // used as a helper inside db/routines.js
 async function attachActivitiesToRoutines(routines) {
+try{
 
+ 
+
+  const promises = await Promise.all(routines.map( async(routine) => {
+   
+    const {rows: activities} = await client.query(`
+    SELECT activities.*
+    FROM activities
+    JOIN routine_activities ON
+    routine_activities."activityId" = activities.id
+    WHERE routine_activities."routineId"=$1;
+    `, [routine.id])
+    
+    routine.activities = activities;
+    return routine;
+    
+  }))
+
+  return promises;
+
+} catch (error){
+  throw error
+}
 
   
 }

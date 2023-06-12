@@ -71,8 +71,34 @@ async function getAllRoutines() {
       ON r."creatorId" = u.id;
     `);
 
+   
+
     const allRoutines = await attachActivitiesToRoutines(routines);
-    return allRoutines;
+
+    const routinesMapped = await Promise.all(allRoutines.map(async(routine) => {
+      await routine.activities.map(async(activity) => {
+        activity.routineId = routine.id;
+        const {rows: [activityInfo]} = await client.query(`
+        SELECT duration, count
+        FROM routine_activities
+        WHERE "activityId" = $1
+      `, [activity.id])
+      
+
+        activity.duration = await activityInfo.duration;
+    
+        activity.count = await activityInfo.count;
+       
+        
+        return activity;
+      })
+      console.log(routine)
+      return routine;
+    }
+    )
+    )
+    ;
+    return routinesMapped;
 
   } catch (error) {
     console.error('Error getting all routines: ', error);
@@ -101,7 +127,7 @@ async function getAllPublicRoutines() {
 
 async function getAllRoutinesByUser({ username }) {
   try{ 
-    const { rows: routines } = await client.query(`
+     /* const { rows: routines } = await client.query(`
       SELECT routines.*
       FROM routines
       JOIN users ON routines."creatorId" = users.id
@@ -110,6 +136,14 @@ async function getAllRoutinesByUser({ username }) {
     
     const routinesWithActivities = await attachActivitiesToRoutines(routines);
     return routinesWithActivities;
+
+    */
+
+    // trying different approach
+
+    const routines = await getAllRoutines();
+    console.log(routines)
+    //return routines.filter(routine => routine.creatorName === username)
 
   } catch(error){    
     console.error("Error getting routines by user", error);
@@ -152,24 +186,9 @@ async function getPublicRoutinesByUser({ username }) {
 
     */
 
-    const {rows: [user]} = await client.query
-      (`SELECT id
-      FROM users
-      WHERE users.username=$1
-      `, [username])
     
-
-    const {rows: routines} = await client.query(`
-      SELECT *
-      FROM routines
-      WHERE "isPublic" = true
-      AND "creatorId" = $1
     
-    `, [user.id])
-    
-   console.log(routines)
-    return routines;
-
+   
 
     
 
