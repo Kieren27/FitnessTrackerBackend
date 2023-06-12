@@ -10,12 +10,10 @@ async function createActivity({ name, description }) {
     
     `, [name, description])
   
-  // return the new activity
   return activity;
 }
 
 async function getAllActivities() {
-  // select and return an array of all activities
   const {rows} = await client.query(
     `SELECT *
     FROM activities;`
