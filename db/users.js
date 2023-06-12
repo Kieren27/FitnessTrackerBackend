@@ -16,6 +16,8 @@ async function createUser({ username, password }) {
     RETURNING *;
     `, [username, hashedPassword])
 
+    delete user.password;
+
     return user;
   } catch (error) {
     console.error (error);
@@ -44,9 +46,11 @@ async function getUser({ username, password }) {
     const isValid = await bcrypt.compare(password, hashedPassword);
 
     if (isValid) {
+      delete user.password;
       return user;
     }
   } catch (error) {
+    
     console.error (error);
   }
 }
