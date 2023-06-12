@@ -83,15 +83,15 @@ async function getAllRoutines() {
       await routine.activities.map(async(activity) => {
         activity.routineId = routine.id;
         const {rows: [activityInfo]} = await client.query(`
-        SELECT duration, count
+        SELECT *
         FROM routine_activities
         WHERE "activityId" = $1
       `, [activity.id])
       
 
-        activity.duration = await activityInfo.duration;
+        activity.duration = activityInfo.duration;
     
-        activity.count = await activityInfo.count;
+        activity.count = activityInfo.count;
        
         
         return activity;
