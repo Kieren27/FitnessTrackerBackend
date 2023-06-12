@@ -7,10 +7,8 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
     const {rows: [routine]} = await client.query(`
       INSERT INTO routines("creatorId", "isPublic", name, goal)
       VALUES ($1, $2, $3, $4)
-      RETURNING "creatorId", "isPublic", name, goal, id;
-    
-    
-    `, [creatorId, isPublic, name, goal])
+      RETURNING *;
+    `, [creatorId, isPublic, name, goal]);
 
 
     delete routine.password;
