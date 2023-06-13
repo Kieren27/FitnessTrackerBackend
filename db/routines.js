@@ -78,16 +78,14 @@ async function getAllRoutines() {
 
     const routinesMapped = await Promise.all(allRoutines.map(async(routine) => {
       await routine.activities.map(async(activity) => {
-        activity.routineId = routine.id;
         const {rows: [activityInfo]} = await client.query(`
         SELECT *
         FROM routine_activities
         WHERE "activityId" = $1
       `, [activity.id])
       
-
+        activity.routineId = routine.id;
         activity.duration = activityInfo.duration;
-    
         activity.count = activityInfo.count;
        
         
@@ -95,10 +93,8 @@ async function getAllRoutines() {
       })
       console.log(routine)
       return routine;
-    }
-    )
-    )
-    ;
+    }));
+    
     return routinesMapped;
 
   } catch (error) {
