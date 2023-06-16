@@ -3,7 +3,7 @@ const express = require("express");
 const usersRouter = express.Router();
 
 const jwt = require('jsonwebtoken');
-const { getUserByUsername, createUser } = require("../db");
+const { getUserByUsername, createUser, getUser } = require("../db");
 
 // POST /api/users/register
 usersRouter.post('/register', async (req, res, next) => {
@@ -51,7 +51,43 @@ usersRouter.post('/register', async (req, res, next) => {
     }
 });
 // POST /api/users/login
+usersRouter.post('/login', async (req, res, next) => {
+    const { username, password } = req.body;
 
+    if (!username || !password) {
+        next({
+            name: "MissingCredentialsError",
+            message: "Please supply both a username and password"
+        });
+    }
+
+    try {
+        const user = await getUser({ username, password });
+
+        console.log("hello");
+
+        if (!user) {
+            next({
+                name: "InvalidUsername",
+                message: "That user does not exist"
+            });
+        }
+
+
+        const token = jwt.sign({
+            id: user.id,
+            username: user.username,
+        }, process.env.JWT_SECRET);
+
+
+        res.send({ user, token, message: "you're logged in!" });
+
+
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
+});
 // GET /api/users/me
 
 // GET /api/users/:username/routines
