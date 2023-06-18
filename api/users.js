@@ -3,7 +3,8 @@ const express = require("express");
 const usersRouter = express.Router();
 
 const jwt = require('jsonwebtoken');
-const { getUserByUsername, createUser, getUser } = require("../db");
+const { getUserByUsername, createUser, getUser, getUserById } = require("../db");
+const { requireUser } = require("./utils");
 
 // POST /api/users/register
 usersRouter.post('/register', async (req, res, next) => {
@@ -89,6 +90,22 @@ usersRouter.post('/login', async (req, res, next) => {
     }
 });
 // GET /api/users/me
+usersRouter.get('/me', requireUser , async (req, res, next) => {
+
+    try {
+
+        const verifiedUser = await getUserById( req.user.id );
+
+        console.log("verifiedUser: ", verifiedUser);
+
+        if (verifiedUser) {
+            res.send(verifiedUser);
+        }
+
+    } catch ({ name, message }) {
+        next({ name, message });
+    }
+});
 
 // GET /api/users/:username/routines
 
