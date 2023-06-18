@@ -20,7 +20,7 @@ async function createUser({ username, password }) {
 
     return user;
   } catch (error) {
-    console.error (error);
+    console.error(error);
   }
 }
 
@@ -32,7 +32,6 @@ async function getUserByUsername(userName) {
     WHERE username = $1;
     `, [userName]);
 
-    console.log("getUserByUsername ", user);
     return user;
   } catch (error) {
     console.error (error);
@@ -44,8 +43,6 @@ async function getUser({ username, password }) {
 
   try {
     const user = await getUserByUsername(username);
-    console.log("user ", user);
-    console.log("password ", password);
     const hashedPassword = user.password;
     const isValid = await bcrypt.compare(password, hashedPassword);
 
@@ -53,28 +50,26 @@ async function getUser({ username, password }) {
       delete user.password;
       return user;
     } else {
-      throw Error("Username or password is incorrect");
+      throw new Error("Username or password is incorrect");
     }
 
   } catch (error) {
     console.error (error);
-    throw error;
   }
 }
 
 async function getUserById(userId) {
   try {
-    const { rows } = await client.query(`
+    const { rows: [user] } = await client.query(`
       SELECT * FROM users
       WHERE id=$1;
     `, [userId])
 
-    if (!rows.length) {
-      return null
-    } else {
-      delete rows[0].password;
-      return rows[0];
-    }
+    console.log("getUserById: ", user);
+
+    delete user.password;
+    return user;
+
   } catch (error) {
     console.error (error);
   }
