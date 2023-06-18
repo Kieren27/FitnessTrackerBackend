@@ -1,13 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { 
-    getAllActivities, 
-    getActivityByName, 
-    createActivity, 
-    updateActivity, 
-    getActivityById, 
-    getPublicRoutinesByActivity
-} = require('../db')
+const { getAllActivities, getActivityByName, createActivity, updateActivity, getActivityById,  getPublicRoutinesByActivity} = require('../db')
+
 router.use((req, res, next) => {
     console.log("A request has been made to /activities");
 
