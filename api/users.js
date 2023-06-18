@@ -3,7 +3,15 @@ const express = require("express");
 const usersRouter = express.Router();
 
 const jwt = require('jsonwebtoken');
-const { getUserByUsername, createUser, getUser, getUserById } = require("../db");
+const {
+    getUserByUsername,
+    createUser,
+    getUser,
+    getUserById,
+    getAllRoutinesByUser,
+    getPublicRoutinesByUser
+} = require("../db");
+
 const { requireUser } = require("./utils");
 
 // POST /api/users/register
@@ -90,11 +98,11 @@ usersRouter.post('/login', async (req, res, next) => {
     }
 });
 // GET /api/users/me
-usersRouter.get('/me', requireUser , async (req, res, next) => {
+usersRouter.get('/me', requireUser, async (req, res, next) => {
 
     try {
 
-        const verifiedUser = await getUserById( req.user.id );
+        const verifiedUser = await getUserById(req.user.id);
 
         console.log("verifiedUser: ", verifiedUser);
 
@@ -108,6 +116,22 @@ usersRouter.get('/me', requireUser , async (req, res, next) => {
 });
 
 // GET /api/users/:username/routines
+usersRouter.get('/:username/routines', requireUser, async (req, res, next) => {
+    const { username } = req.params;
 
+    try {
+
+        if (req.user.username === username) {
+            const userRoutines = await getAllRoutinesByUser({ username });
+            res.send(userRoutines);
+        } else {
+            const publicUserRoutines = await getPublicRoutinesByUser({ username });
+            res.send(publicUserRoutines);
+        }
+
+    } catch ({ name, message }) {
+        next({ name, message });
+    }
+})
 module.exports = usersRouter;
 
