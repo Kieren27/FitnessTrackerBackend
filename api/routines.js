@@ -6,7 +6,8 @@ const {
     createRoutine,
     getRoutineById,
     updateRoutine,
-    destroyRoutine
+    destroyRoutine,
+    addActivityToRoutine,
  } = require('../db');
 const { requireUser } = require('./utils');
 
@@ -83,5 +84,20 @@ routinesRouter.delete('/:routineId', requireUser, async (req, res, next) => {
     }
 });
 // POST /api/routines/:routineId/activities
+routinesRouter.post('/:routineId/activities', requireUser, async (req, res, next) => {
+    const { routineId } = req.params;
+    const { activityId, count, duration } = req.body;
 
+    try {
+        const routineToAddActivity = await getRoutineById(routineId);
+        
+        console.log('routineToAddActivity: ', routineToAddActivity);
+        if (routineToAddActivity.creatorId === req.user.id) {
+            const addActivity = await addActivityToRoutine({routineId, activityId, count, duration});
+            res.send(addActivity);
+        }
+    } catch ({ name, message }) {
+        next({ name, message });
+    }
+});
 module.exports = routinesRouter;
