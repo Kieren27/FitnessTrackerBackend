@@ -6,6 +6,7 @@ const {
     createRoutine,
     getRoutineById,
     updateRoutine,
+    destroyRoutine
  } = require('../db');
 const { requireUser } = require('./utils');
 
@@ -61,7 +62,26 @@ routinesRouter.patch('/:routineId', requireUser, async (req, res, next) => {
     }
 });
 // DELETE /api/routines/:routineId
+routinesRouter.delete('/:routineId', requireUser, async (req, res, next) => {
+    const { routineId } = req.params;
 
+    try {
+        const routineToBeDeleted = await getRoutineById(routineId);
+
+        if (routineToBeDeleted.creatorId === req.user.id) {
+            const deletedRoutine = await destroyRoutine(routineToBeDeleted.id);
+            res.send(deletedRoutine);
+        } else {
+            res.status(403).json({
+                error: "Unauthorized User",
+                name: "UnauthorizedUserError",
+                message: `User ${req.user.username} is not allowed to delete ${routineToBeDeleted.name}`
+               });
+        }
+    } catch ({ name, message }) {
+        next({ name, message });
+    }
+});
 // POST /api/routines/:routineId/activities
 
 module.exports = routinesRouter;
