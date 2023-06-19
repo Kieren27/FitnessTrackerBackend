@@ -226,16 +226,19 @@ async function destroyRoutine(id) {
     , [id]);
 
     // Delete the routine
-    const result = await client.query(
-      `DELETE FROM routines
-      WHERE id = $1;`
-    , [id]);
+    const {rows: [result]} = await client.query(`
+      DELETE FROM routines
+      WHERE id = $1
+      RETURNING *;
+      `, [id]);
 
     if (result.rowCount === 0) {
       throw new Error('Routine not found');
     }
 
-    console.log('Routine successfully deleted');
+    console.log("destroyRoutine result: ", result);
+
+    return result;
   } catch (error) {
     console.error('Error while deleting routine', error);
     throw error;
