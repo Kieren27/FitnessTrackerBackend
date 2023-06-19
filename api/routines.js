@@ -1,8 +1,18 @@
 const express = require('express');
-const router = express.Router();
+const routinesRouter = express.Router();
+
+const { getAllPublicRoutines } = require('../db');
 
 // GET /api/routines
+routinesRouter.get('/', async (req, res, next) => {
+    try {
+        const routines = await getAllPublicRoutines();
 
+        res.send(routines);
+    } catch ({ name, message }) {
+        next({ name, message });
+    }
+});
 // POST /api/routines
 
 // PATCH /api/routines/:routineId
@@ -11,4 +21,4 @@ const router = express.Router();
 
 // POST /api/routines/:routineId/activities
 
-module.exports = router;
+module.exports = routinesRouter;
