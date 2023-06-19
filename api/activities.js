@@ -1,6 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { getAllActivities, getActivityByName, createActivity, updateActivity, getActivityById,  getPublicRoutinesByActivity} = require('../db')
+const { 
+  getAllActivities, 
+  getActivityByName, 
+  createActivity, 
+  updateActivity, 
+  getActivityById,  
+  getPublicRoutinesByActivity
+} = require('../db');
+const { requireUser } = require('./utils');
 
 router.use((req, res, next) => {
     console.log("A request has been made to /activities");
@@ -21,7 +29,7 @@ router.get("/", async (req, res, next) => {
 
 // POST /api/activities
 
-router.post("/", async (req, res, next) => {
+router.post("/", requireUser, async (req, res, next) => {
     try {
       const { name, description } = req.body;
   
@@ -66,28 +74,28 @@ router.get("/:activityId/routines", async (req, res, next) => {
   })
 
 // PATCH /api/activities/:activityId
-router.patch('/:activityId', async (req, res, next) => {
+router.patch('/:activityId', requireUser, async (req, res, next) => {
     try {
         const { activityId } = req.params;
         const { name, description } = req.body;
         // Check if the activity exists
         const existingActivity = await getActivityById(activityId);
         if (!existingActivity) {
-            return next({
-                error: "ActivityNotFoundError",
-                message: "Activity 10000 not found",
-                name: "ActivityNotFoundError",
-            });
+            res.send({
+              error: "ActivityNotFoundError",
+              message: `Activity ${activityId} not found`,
+              name: "ActivityNotFoundError",
+          });
         }
 
         // Check if the new name already exists for another activity
         const activityWithSameName = await getActivityByName(name);
         if (activityWithSameName && activityWithSameName.id !== activityId) {
-        return next({
+        res.send({
             error: "ActivityNameConflictError",
             message: "An activity with name " + name + " already exists",
             name: "ActivityNameConflictError",
-        });
+        })
         }
         const updatedActivity = await updateActivity({id:activityId, name, description });
         res.send({ name: updatedActivity.name, id:parseInt(activityId), description: updatedActivity.description });
