@@ -46,7 +46,7 @@ try{
 //shruthi
 async function getRoutinesWithoutActivities() {
   try {
-    const {rows: [routines]} = await client.query(`
+    const {rows: routines} = await client.query(`
     SELECT *
     FROM routines
     `)
